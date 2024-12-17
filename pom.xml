@@ -11,13 +11,6 @@
         <maven.compiler.target>21</maven.compiler.target>
         <exec.mainClass>com.mudnebr.dev.stmtarchive.grabber.StmtarchiveGrabber</exec.mainClass>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>info.picocli</groupId>
-            <artifactId>picocli</artifactId>
-            <version>4.7.6</version>
-        </dependency>
-    </dependencies>
         <build>
         <plugins>
             <plugin>

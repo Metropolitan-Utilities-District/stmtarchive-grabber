@@ -4,26 +4,18 @@ package com.mudnebr.dev.stmtarchive.grabber;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
-import java.io.Writer;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.Base64;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
-import javax.net.ssl.HttpsURLConnection;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -31,37 +23,48 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import picocli.CommandLine;
-import picocli.CommandLine.Option;
 
 /**
  *
  * @author Ax Martinelli / e92060
  */
-@CommandLine.Command(name = "stmtgrab", footer = "Made by Ax Martinelli / e92060, created 2024", description = "Fetches PDFs from the STMT_ARCHIVE databases. Requires Java 21 or higher.", mixinStandardHelpOptions = true, version = "0.1")
-public class StmtarchiveGrabber implements Runnable {
+public class StmtarchiveGrabber {
 
 	public static final String URL = "https://stmtarchivews.mudnebr.com/stmtarchivews/GetBillPDF";
 
-	@Option(names = {"-o", "--output"}, description = "The file name of the saved PDF")
-	private String outputFile;
+	private static String outputFile;
 
-	@Option(names = {"-c", "--contract"}, description = "The contract account number")
-	private String contractNumber;
-
-	@Option(names = {"-t", "--date"}, description = "The billing date")
-	private String billDate;
-
-	@Option(names = {"-d", "--document"}, description = "The print document number")
-	private String documentNumber;
+	private static String contractNumber;
+	private static String billDate;
+	private static String documentNumber;
 
 	public static void main(String[] args) {
-		int exitCode = new CommandLine(new StmtarchiveGrabber()).execute(args);
-		System.exit(exitCode);
+		System.out.println("==========================================");
+		System.out.println("     STATEMENT ARCHIVE GRABBER (v0.2)     ");
+		System.out.println("==========================================");
+		System.out.println();
+		System.out.println();
+		Scanner s = new Scanner(System.in);
+		System.out.println("Please enter the contract account number.");
+		System.out.print("     ");
+		contractNumber = s.nextLine();
+		System.out.println();
+		System.out.println("Please enter the print document number.");
+		System.out.print("     ");
+		documentNumber = s.nextLine();
+		System.out.println();
+		System.out.println("Please enter the billing date.");
+		System.out.print("     ");
+		billDate = s.nextLine();
+		System.out.println();
+		System.out.println("What should the pdf be named?");
+		System.out.print("     ");
+		outputFile = s.nextLine();
+		run();
 	}
 
-	@Override
-	public void run() {
+
+	public static void run() {
 		if(!isValidInputs(contractNumber, documentNumber, billDate)) {
 			System.err.println("Please provide at least one parameter to search.");
 			System.exit(1);
@@ -129,6 +132,7 @@ public class StmtarchiveGrabber implements Runnable {
 				NodeList nodes = doc.getElementsByTagName("faultstring");
 				if(nodes.item(0) != null) {
 					System.err.println("No file matching these parameters could be found!");
+					System.err.println("Either the information you entered was incorrect, or you may need to provide more information.");
 					Files.deleteIfExists(f.toPath());
 					System.exit(0);
 				}
@@ -139,19 +143,17 @@ public class StmtarchiveGrabber implements Runnable {
 					FileOutputStream out = new FileOutputStream(outputFile == null ? "result.pdf" : outputFile + ".pdf");
 					out.write(fraw);
 					out.close();
-					System.out.println("Saved file.");
+					System.out.println("The PDF was found, and was saved successfully.");
 					Files.deleteIfExists(f.toPath());
 				} else {
 					System.err.println("An unexpected error occurred! The response from the server was:");
 					System.err.println(line);
+					System.err.println("Please send Ax Martinelli (on the AppDev team) an email about this.");
+					System.err.println("Thank you! :D");
 				}
 			}
-			int exitVal = p.waitFor();
-			System.out.println("Exited with code " + exitVal);
 
 		} catch (IOException ex) {
-			Logger.getLogger(StmtarchiveGrabber.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (InterruptedException ex) {
 			Logger.getLogger(StmtarchiveGrabber.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (ParserConfigurationException ex) {
 			Logger.getLogger(StmtarchiveGrabber.class.getName()).log(Level.SEVERE, null, ex);
