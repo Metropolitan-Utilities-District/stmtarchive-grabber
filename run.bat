@@ -1,3 +1,3 @@
 @echo off
-C:\Users\t92060\Desktop\jdk\jdk-21.0.2\bin\java.exe -jar target\stmtarchive-grabber-0.1-SNAPSHOT-jar-with-dependencies.jar
+<path to java 21 jdk>\bin\java.exe -jar <path to jar>\stmtarchive-grabber-1.0.jar
 pause

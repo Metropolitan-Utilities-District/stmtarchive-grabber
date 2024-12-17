@@ -40,7 +40,7 @@ public class StmtarchiveGrabber {
 
 	public static void main(String[] args) {
 		System.out.println("==========================================");
-		System.out.println("     STATEMENT ARCHIVE GRABBER (v0.2)     ");
+		System.out.println("     STATEMENT ARCHIVE GRABBER (v1.0)     ");
 		System.out.println("==========================================");
 		System.out.println();
 		System.out.println();
